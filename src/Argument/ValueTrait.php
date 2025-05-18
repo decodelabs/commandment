@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Commandment\Request\Argument;
+namespace DecodeLabs\Commandment\Argument;
 
 trait ValueTrait
 {

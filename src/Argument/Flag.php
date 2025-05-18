@@ -7,10 +7,12 @@
 
 declare(strict_types=1);
 
-namespace DecodeLabs\Commandment\Request\Argument;
+namespace DecodeLabs\Commandment\Argument;
 
-use DecodeLabs\Commandment\Request\Argument;
+use Attribute;
+use DecodeLabs\Commandment\Argument;
 
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class Flag implements Argument
 {
     protected(set) string $name;

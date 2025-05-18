@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Commandment\Request\Parameter;
 
-use DecodeLabs\Commandment\Request\Argument;
+use DecodeLabs\Commandment\Argument;
 use DecodeLabs\Commandment\Request\Parameter;
 use DecodeLabs\Glitch\Dumpable;
 

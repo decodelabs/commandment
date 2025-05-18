@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Commandment\Request;
 
-use DecodeLabs\Commandment\Request\Argument;
+use DecodeLabs\Commandment\Argument;
 
 /**
  * @template T

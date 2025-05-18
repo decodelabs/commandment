@@ -11,5 +11,7 @@ namespace DecodeLabs\Commandment;
 
 interface Action
 {
-
+    public function execute(
+        Request $request
+    ): bool;
 }

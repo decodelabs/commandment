@@ -10,12 +10,12 @@ declare(strict_types=1);
 namespace DecodeLabs\Commandment;
 
 use DecodeLabs\Coercion;
-use DecodeLabs\Commandment\Request\Argument;
-use DecodeLabs\Commandment\Request\Argument\Option as OptionArgument;
-use DecodeLabs\Commandment\Request\Argument\OptionList as OptionListArgument;
-use DecodeLabs\Commandment\Request\Argument\Flag as FlagArgument;
-use DecodeLabs\Commandment\Request\Argument\Value as ValueArgument;
-use DecodeLabs\Commandment\Request\Argument\ValueList as ValueListArgument;
+use DecodeLabs\Commandment\Argument;
+use DecodeLabs\Commandment\Argument\Option as OptionArgument;
+use DecodeLabs\Commandment\Argument\OptionList as OptionListArgument;
+use DecodeLabs\Commandment\Argument\Flag as FlagArgument;
+use DecodeLabs\Commandment\Argument\Value as ValueArgument;
+use DecodeLabs\Commandment\Argument\ValueList as ValueListArgument;
 use DecodeLabs\Commandment\Request\Fragment;
 use DecodeLabs\Commandment\Request\Parameter\Flag as FlagParameter;
 use DecodeLabs\Commandment\Request\Parameter\Value as ValueParameter;
@@ -28,14 +28,11 @@ class Request
 {
     public ParameterSet $parameters {
         get {
-            if(isset($this->parameters)) {
-                return $this->parameters;
-            }
-
-            $this->parse();
-            return $this->parameters;
+            return $this->parameters ??= $this->parse();
         }
     }
+
+    protected(set) string $command;
 
     /**
      * @var array<int,Fragment>
@@ -47,7 +44,10 @@ class Request
      */
     protected(set) array $arguments = [];
 
-    protected(set) Slingshot $slingshot;
+    /**
+     * @var array<string,mixed>
+     */
+    protected(set) array $attributes = [];
 
     /**
      * @var array<string,mixed>
@@ -56,13 +56,17 @@ class Request
 
     /**
      * @param list<string|Fragment> $fragments
+     * @param array<string,mixed> $attributes
      * @param array<string,mixed> $server
      */
     public function __construct(
+        string $command,
         array $fragments,
-        ?Slingshot $slingshot = null,
+        array $attributes = [],
         ?array $server = null,
     ) {
+        $this->command = $command;
+
         foreach ($fragments as $fragment) {
             if (is_string($fragment)) {
                 $this->fragments[] = new Fragment($fragment);
@@ -71,7 +75,7 @@ class Request
             }
         }
 
-        $this->slingshot = $slingshot ?? new Slingshot();
+        $this->attributes = $attributes;
         $this->server = $server ?? $_SERVER;
     }
 
@@ -93,6 +97,46 @@ class Request
         string $key
     ): bool {
         return isset($this->server[$key]);
+    }
+
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+
+    public function withAttribute(
+        string $name,
+        mixed $value
+    ): static {
+        $output = clone $this;
+        $output->attributes[$name] = $value;
+
+        return $output;
+    }
+
+    public function getAttribute(
+        string $name,
+        mixed $default = null
+    ): mixed {
+        if (!array_key_exists($name, $this->attributes)) {
+            return $default;
+        }
+
+        return $this->attributes[$name];
+    }
+
+    public function withoutAttribute(
+        string $name
+    ): static {
+        $output = clone $this;
+        unset($output->attributes[$name]);
+
+        return $output;
     }
 
 
@@ -314,20 +358,22 @@ class Request
                     continue;
                 }
 
-                if($parameters[$name] instanceof ValueParameter) {
-                    if($parameters[$name]->argument) {
-                        $parameters[$name]->replaceValue($value);
+                $parameter = $parameters[$name];
+
+                if($parameter instanceof ValueParameter) {
+                    if($parameter->argument) {
+                        $parameter->replaceValue($value);
                     } else {
-                        $parameters[$name] = new ValueListParameter(
+                        $parameter = new ValueListParameter(
                             name: $name,
-                            value: [$parameters[$name]->value, $value],
+                            value: [$parameter->value, $value],
                             argument: null
                         );
                     }
-                } elseif($parameters[$name] instanceof ValueListParameter) {
-                    $parameters[$name]->addValue($value);
-                } elseif($parameters[$name] instanceof FlagParameter) {
-                    $parameters[$name]->incrementInstances();
+                } elseif($parameter instanceof ValueListParameter) {
+                    $parameter->addValue($value);
+                } elseif($parameter instanceof FlagParameter) {
+                    $parameter->incrementInstances();
                 }
 
                 continue;
