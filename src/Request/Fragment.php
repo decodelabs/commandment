@@ -47,7 +47,24 @@ class Fragment implements Stringable
             }
 
             if($this->isOption()) {
-                return explode('=', $this->body, 2)[1] ?? null;
+                if(null === ($output = explode('=', $this->body, 2)[1] ?? null)) {
+                    return null;
+                }
+
+                if(
+                    (
+                        str_starts_with($output, '"') &&
+                        str_ends_with($output, '"')
+                    ) ||
+                    (
+                        str_starts_with($output, "'") &&
+                        str_ends_with($output, "'")
+                    )
+                ) {
+                    $output = substr($output, 1, -1);
+                }
+
+                return $output;
             }
 
             return null;

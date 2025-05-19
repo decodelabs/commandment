@@ -12,12 +12,12 @@ namespace DecodeLabs\Commandment\Action;
 use DecodeLabs\Archetype;
 use DecodeLabs\Commandment\Action;
 use DecodeLabs\Commandment\Argument;
-use DecodeLabs\Commandment\Argument\Flag as FlagArgument;
 use DecodeLabs\Commandment\Argument\Option as OptionArgument;
 use DecodeLabs\Commandment\Argument\OptionList as OptionListArgument;
 use DecodeLabs\Commandment\Argument\Value as ValueArgument;
 use DecodeLabs\Commandment\Argument\ValueList as ValueListArgument;
 use DecodeLabs\Commandment\Description;
+use DecodeLabs\Commandment\Dispatcher;
 use DecodeLabs\Commandment\Request;
 use DecodeLabs\Terminus\Session;
 use ReflectionAttribute;
@@ -33,40 +33,32 @@ class Help implements Action
 {
     public function __construct(
         protected Session $io,
+        protected Dispatcher $dispatcher
     ) {
     }
 
     public function execute(
         Request $request
     ): bool {
-        $rawCommand = $request->parameters->getAsString('action');
-        $command = str_replace('-', ' ', (string)$rawCommand);
-        $command = ucwords($command);
-        $command = str_replace(' ', '', $command);
+        $action = $request->parameters->getAsString('action');
 
-        if(!$class = Archetype::tryResolve(
-            Action::class,
-            $command
-        )) {
+        if(!$class = $this->dispatcher->getActionClass((string)$action)) {
             $this->io->newLine();
-            $this->io->write('Command not found: ');
-            $this->io->{'.brightRed'}($rawCommand);
+            $this->io->writeError('Command not found: ');
+            $this->io->error((string)$action);
             $this->io->newLine();
 
             return false;
         }
 
-        $ref = new ReflectionClass($class);
-
-        $description = null;
         $arguments = [];
 
-        foreach($ref->getAttributes(
-            Argument::class,
-            ReflectionAttribute::IS_INSTANCEOF
-        ) as $attribute) {
+        foreach($this->dispatcher->getActionAttributes($class) as $attribute) {
             $arguments[] = $attribute->newInstance();
         }
+
+        $ref = new ReflectionClass($class);
+        $description = null;
 
         foreach($ref->getAttributes(
             Description::class,
@@ -76,7 +68,7 @@ class Help implements Action
 
         $this->io->newLine();
         $this->io->writeLine('Command:');
-        $this->io->{'.>brightMagenta'}($rawCommand);
+        $this->io->{'.>brightMagenta'}($action);
         $this->io->newLine();
 
         if($description !== null) {

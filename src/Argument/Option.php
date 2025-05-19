@@ -13,7 +13,11 @@ use Attribute;
 use DecodeLabs\Commandment\Argument;
 use DecodeLabs\Commandment\ArgumentTrait;
 
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+#[Attribute(
+    Attribute::TARGET_CLASS |
+    Attribute::TARGET_METHOD |
+    Attribute::IS_REPEATABLE
+)]
 class Option implements Argument
 {
     use ArgumentTrait;

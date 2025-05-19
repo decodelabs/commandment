@@ -5,7 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
---
+- Added getActionClass() to Dispatcher
+- Separated Action attribute scanner in Dispatcher
+- Include Dispatcher in Slingshot per request
+- Fixed flag parameter parsing
+- Added ActionExists Action
+- Simplified Help Action
+- Allow Arguments on Action constructor
+- Fragment strip quotes from option values
 
 ---
 

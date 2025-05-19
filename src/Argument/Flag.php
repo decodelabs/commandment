@@ -12,7 +12,11 @@ namespace DecodeLabs\Commandment\Argument;
 use Attribute;
 use DecodeLabs\Commandment\Argument;
 
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+#[Attribute(
+    Attribute::TARGET_CLASS |
+    Attribute::TARGET_METHOD |
+    Attribute::IS_REPEATABLE
+)]
 class Flag implements Argument
 {
     protected(set) string $name;

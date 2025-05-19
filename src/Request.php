@@ -517,11 +517,6 @@ class Request
                         value: Coercion::toArray($argument->default),
                         argument: $argument
                     );
-                } else {
-                    $parameters[$name] = new FlagParameter(
-                        name: $name,
-                        argument: $argument
-                    );
                 }
 
                 continue;

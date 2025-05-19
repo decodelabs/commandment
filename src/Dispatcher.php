@@ -28,9 +28,19 @@ class Dispatcher
 
     protected(set) Slingshot $slingshot;
 
-    public function __construct()
-    {
+    /**
+     * @var array<string,mixed>|null
+     */
+    protected(set) ?array $server = null;
+
+    /**
+     * @param array<string,mixed>|null $server
+     */
+    public function __construct(
+        ?array $server = null
+    ) {
         $this->slingshot = new Slingshot();
+        $this->server = $server;
 
         $this->addMiddleware(
             new HelpMiddleware()
@@ -49,13 +59,16 @@ class Dispatcher
         ?array $server = null,
         ?Slingshot $slingshot = null
     ): Request {
-        return new Request(
+        $output = new Request(
             command: $command,
             fragments: $arguments,
             attributes: $attributes,
-            server: $server,
+            server: $server ?? $this->server,
             slingshot: $slingshot ?? $this->slingshot
         );
+
+        $output->slingshot->addType($this);
+        return $output;
     }
 
 
@@ -89,28 +102,19 @@ class Dispatcher
             $request = $middleware->handle($request);
         }
 
-        $command = str_replace('-', ' ', $request->command);
-        $command = ucwords($command);
-        $command = str_replace(' ', '', $command);
-
-        if(!$class = Archetype::tryResolve(Action::class, $command)) {
+        if(!$class = $this->getActionClass($request->command)) {
             throw Exceptional::NotFound(
-                'Command not found: ' . $command,
+                'Command not found: ' . $request->command,
                 data: $request
             );
         }
 
-        $ref = new ReflectionClass($class);
-
-        $attributes = $ref->getAttributes(
-            Argument::class,
-            ReflectionAttribute::IS_INSTANCEOF
-        );
-
-        foreach($attributes as $attribute) {
+        foreach($this->getActionAttributes($class) as $attribute) {
             $argument = $attribute->newInstance();
             $request = $request->withArgument($argument);
         }
+
+        $request->parse();
 
         $action = $request->slingshot->newInstance(
             $class,
@@ -120,5 +124,51 @@ class Dispatcher
         );
 
         return $action->execute($request);
+    }
+
+    /**
+     * @param class-string<Action> $class
+     * @return list<ReflectionAttribute<Argument>>
+     */
+    public static function getActionAttributes(
+        string $class
+    ): array {
+        $ref = new ReflectionClass($class);
+        $attributes = [];
+
+        if(null !== ($constructor = $ref->getConstructor())) {
+            $attributes = $constructor->getAttributes(
+                Argument::class,
+                ReflectionAttribute::IS_INSTANCEOF
+            );
+        }
+
+        foreach($ref->getAttributes(
+            Argument::class,
+            ReflectionAttribute::IS_INSTANCEOF
+        ) as $attribute) {
+            $attributes[] = $attribute;
+        }
+
+        return $attributes;
+    }
+
+    public function hasAction(
+        string $name
+    ): bool {
+        return $this->getActionClass($name) !== null;
+    }
+
+    /**
+     * @return class-string<Action>|null
+     */
+    public function getActionClass(
+        string $name
+    ): ?string {
+        $name = str_replace(['-', '/'], [' ', ' \\ '], $name);
+        $name = ucwords($name);
+        $name = str_replace(' ', '', $name);
+
+        return Archetype::tryResolve(Action::class, $name);
     }
 }
