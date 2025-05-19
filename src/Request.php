@@ -54,6 +54,8 @@ class Request
      */
     protected(set) array $server = [];
 
+    protected(set) Slingshot $slingshot;
+
     /**
      * @param list<string|Fragment> $fragments
      * @param array<string,mixed> $attributes
@@ -64,6 +66,7 @@ class Request
         array $fragments,
         array $attributes = [],
         ?array $server = null,
+        ?Slingshot $slingshot = null
     ) {
         $this->command = $command;
 
@@ -77,6 +80,7 @@ class Request
 
         $this->attributes = $attributes;
         $this->server = $server ?? $_SERVER;
+        $this->slingshot = $slingshot ? clone $slingshot : new Slingshot();
     }
 
     /**
@@ -206,6 +210,7 @@ class Request
      */
     public function withOptionArgument(
         string $name,
+        ?string $shortcut = null,
         bool $required = true,
         ?string $default = null,
         ?array $options = null,
@@ -214,6 +219,7 @@ class Request
         return $this->withArgument(
             new OptionArgument(
                 name: $name,
+                shortcut: $shortcut,
                 required: $required,
                 default: $default,
                 options: $options,
@@ -228,6 +234,7 @@ class Request
      */
     public function withOptionListArgument(
         string $name,
+        ?string $shortcut = null,
         bool $required = true,
         ?array $default = null,
         ?array $options = null,
@@ -238,6 +245,7 @@ class Request
         return $this->withArgument(
             new OptionListArgument(
                 name: $name,
+                shortcut: $shortcut,
                 required: $required,
                 default: $default,
                 options: $options,
@@ -255,6 +263,23 @@ class Request
         $output = clone $this;
         $output->arguments[$argument->name] = $argument;
         return $output;
+    }
+
+
+    /**
+     * @param list<string|Fragment> $fragments
+     */
+    public function rewrite(
+        string $command,
+        array $fragments
+    ): self {
+        return new self(
+            command: $command,
+            fragments: $fragments,
+            attributes: $this->attributes,
+            server: $this->server,
+            slingshot: $this->slingshot
+        );
     }
 
 
@@ -537,6 +562,6 @@ class Request
         }
 
         // @phpstan-ignore-next-line
-        return new ParameterSet($parameters);
+        return $this->parameters = new ParameterSet($parameters);
     }
 }

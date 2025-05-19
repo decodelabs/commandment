@@ -19,6 +19,8 @@ class OptionList implements Argument
     use ArgumentTrait;
     use ValueTrait;
 
+    protected(set) ?string $shortcut = null;
+
     public ?int $min = null;
     public ?int $max = null;
 
@@ -33,6 +35,7 @@ class OptionList implements Argument
      */
     public function __construct(
         string $name,
+        ?string $shortcut = null,
         bool $required = false,
         ?array $default = null,
         ?array $options = null,
@@ -41,6 +44,7 @@ class OptionList implements Argument
         ?string $description = null
     ) {
         $this->name = $name;
+        $this->shortcut = $shortcut;
         $this->required = $required;
         $this->default = $default;
         $this->options = $options;

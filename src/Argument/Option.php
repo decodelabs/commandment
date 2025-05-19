@@ -19,6 +19,7 @@ class Option implements Argument
     use ArgumentTrait;
     use ValueTrait;
 
+    protected(set) ?string $shortcut = null;
     protected(set) ?string $default = null;
 
     /**
@@ -26,12 +27,14 @@ class Option implements Argument
      */
     public function __construct(
         string $name,
+        ?string $shortcut = null,
         bool $required = false,
         ?string $default = null,
         ?array $options = null,
         ?string $description = null
     ) {
         $this->name = $name;
+        $this->shortcut = $shortcut;
         $this->required = $required;
         $this->default = $default;
         $this->options = $options;

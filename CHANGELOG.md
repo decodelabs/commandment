@@ -9,3 +9,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented argument parser
 - Added dispatcher system
 - Applied Arguments as Action Attributes
+- Added Middleware stack
+- Added Help Action
