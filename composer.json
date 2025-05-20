@@ -19,10 +19,10 @@
     },
     "require-dev": {
         "decodelabs/phpstan-decodelabs": "^0.7.0",
-        "decodelabs/terminus": "^0.11.6"
+        "decodelabs/terminus": "^0.12"
     },
     "conflict": {
-        "decodelabs/terminus": "<0.11"
+        "decodelabs/terminus": "<0.12"
     },
     "autoload": {
         "psr-4": {
