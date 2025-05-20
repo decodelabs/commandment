@@ -65,12 +65,12 @@ class MyAction implements Action
     ): bool {
         $this->io->writeLine('Hello world!');
 
-        $this->io->writeLine('Input: '. $request->parameters->getAsString('input'));
+        $this->io->writeLine('Input: '. $request->parameters->tryString('input'));
 
-        if($request->parameters->getAsBool('verbose')) {
+        if($request->parameters->asBool('verbose')) {
             $this->io->writeLine('Verbose output enabled');
 
-            for($potato = 0; $potato < $request->parameters->getAsInt('potatoes'); $potato++) {
+            for($potato = 0; $potato < $request->parameters->asInt('potatoes'); $potato++) {
                 $this->io->writeLine('Potato #'. ($potato + 1));
             }
         }

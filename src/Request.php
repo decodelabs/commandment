@@ -533,7 +533,13 @@ class Request
         foreach($parameters as $name => $parameter) {
             if($parameter instanceof ValueListParameter) {
                 // @phpstan-ignore-next-line
-                if(count($parameter->value) < ($parameter->argument?->min ?? 0)) {
+                $min = $parameter->argument?->min ?? 0;
+
+                if($parameter->argument?->required) {
+                    $min = max($min, 1);
+                }
+
+                if(count($parameter->value) < $min) {
                     throw Exceptional::InvalidArgument(
                         'Parameter "' . $name . '" requires at least ' .
                         // @phpstan-ignore-next-line

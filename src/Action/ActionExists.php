@@ -31,9 +31,9 @@ class ActionExists implements Action
     public function execute(
         Request $request
     ): bool {
-        $action = $request->parameters->getAsString('action');
+        $action = $request->parameters->asString('action');
 
-        if ($this->dispatcher->hasAction((string)$action)) {
+        if ($this->dispatcher->hasAction($action)) {
             $this->io->writeLine('true');
         } else {
             $this->io->writeLine('false');

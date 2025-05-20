@@ -40,12 +40,12 @@ class Help implements Action
     public function execute(
         Request $request
     ): bool {
-        $action = $request->parameters->getAsString('action');
+        $action = $request->parameters->asString('action');
 
-        if(!$class = $this->dispatcher->getActionClass((string)$action)) {
+        if(!$class = $this->dispatcher->getActionClass($action)) {
             $this->io->newLine();
             $this->io->writeError('Command not found: ');
-            $this->io->error((string)$action);
+            $this->io->error($action);
             $this->io->newLine();
 
             return false;

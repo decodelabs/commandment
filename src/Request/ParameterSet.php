@@ -13,6 +13,7 @@ use DecodeLabs\Coercion;
 use DecodeLabs\Commandment\Request\Parameter\Flag as FlagParameter;
 use DecodeLabs\Commandment\Request\Parameter\Value as ValueParameter;
 use DecodeLabs\Commandment\Request\Parameter\ValueList as ValueListParameter;
+use DecodeLabs\Exceptional;
 use DecodeLabs\Glitch\Dumpable;
 
 class ParameterSet implements Dumpable
@@ -46,11 +47,11 @@ class ParameterSet implements Dumpable
         return $this->parameters[$name] ?? null;
     }
 
-    public function getAsBool(
+    public function tryBool(
         string $name
-    ): bool {
-        if(!$parameter = ($this->parameters[$name] ?? null)) {
-            return false;
+    ): ?bool {
+        if(null === ($parameter = ($this->parameters[$name] ?? null))) {
+            return null;
         }
 
         if($parameter instanceof FlagParameter) {
@@ -58,7 +59,7 @@ class ParameterSet implements Dumpable
         }
 
         if($parameter instanceof ValueParameter) {
-            return (bool)Coercion::parseBool($parameter->value);
+            return Coercion::parseBool($parameter->value);
         }
 
         if($parameter instanceof ValueListParameter) {
@@ -72,7 +73,15 @@ class ParameterSet implements Dumpable
         return false;
     }
 
-    public function getAsString(
+    public function asBool(
+        string $name
+    ): bool {
+        return (bool)$this->tryBool($name);
+    }
+
+
+
+    public function tryString(
         string $name
     ): ?string {
         if(!$parameter = ($this->parameters[$name] ?? null)) {
@@ -90,20 +99,42 @@ class ParameterSet implements Dumpable
         return null;
     }
 
-    public function getAsInt(
+    public function asString(
+        string $name
+    ): string {
+        if(null === ($output = $this->tryString($name))) {
+            throw Exceptional::InvalidArgument(
+                'Parameter "' . $name . '" does not exist or does not have a value'
+            );
+        }
+
+        return $output;
+    }
+
+
+
+    public function tryInt(
         string $name
     ): ?int {
-        if(null !== ($output = $this->getAsString($name))) {
+        if(null !== ($output = $this->tryString($name))) {
             $output = Coercion::asInt($output);
         }
 
         return $output;
     }
 
+    public function asInt(
+        string $name
+    ): ?int {
+        return Coercion::asInt($this->asString($name));
+    }
+
+
+
     /**
      * @return ?list<string>
      */
-    public function getAsStringList(
+    public function tryStringList(
         string $name
     ): ?array {
         if(!$parameter = ($this->parameters[$name] ?? null)) {
@@ -121,18 +152,45 @@ class ParameterSet implements Dumpable
         return null;
     }
 
+    /**
+     * @return list<string>
+     */
+    public function asStringList(
+        string $name
+    ): array {
+        if(null === ($output = $this->tryStringList($name))) {
+            $output = [];
+        }
+
+        return $output;
+    }
+
+
 
     /**
      * @return ?list<int>
      */
-    public function getAsIntList(
+    public function tryIntList(
         string $name
     ): ?array {
-        if(null !== ($output = $this->getAsStringList($name))) {
+        if(null !== ($output = $this->tryStringList($name))) {
             $output = array_map(
                 static fn($value) => Coercion::asInt($value),
                 $output
             );
+        }
+
+        return $output;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function asIntList(
+        string $name
+    ): array {
+        if(null === ($output = $this->tryIntList($name))) {
+            $output = [];
         }
 
         return $output;
