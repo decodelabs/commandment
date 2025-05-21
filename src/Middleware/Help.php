@@ -12,7 +12,7 @@ namespace DecodeLabs\Commandment\Middleware;
 use DecodeLabs\Commandment\Middleware;
 use DecodeLabs\Commandment\Request;
 use DecodeLabs\Commandment\Request\Fragment;
-use DecodeLabs\Terminus;
+use DecodeLabs\Terminus\Session;
 
 class Help implements Middleware
 {
@@ -29,7 +29,7 @@ class Help implements Middleware
     public function handle(
         Request $request
     ): Request {
-        if(!class_exists(Terminus::class)) {
+        if(!class_exists(Session::class)) {
             return $request;
         }
 

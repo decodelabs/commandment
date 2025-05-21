@@ -14,7 +14,6 @@ use DecodeLabs\Commandment\Request\Fragment;
 use DecodeLabs\Commandment\Middleware\Help as HelpMiddleware;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Slingshot;
-use DecodeLabs\Terminus;
 use DecodeLabs\Terminus\Session;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -84,10 +83,10 @@ class Dispatcher
     ): bool {
         if(
             !$request->slingshot->hasType(Session::class) &&
-            class_exists(Terminus::class)
+            class_exists(Session::class)
         ) {
             $request->slingshot->addType(
-                Terminus::getSession()
+                Session::getDefault()
             );
         }
 
