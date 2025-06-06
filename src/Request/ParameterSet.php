@@ -14,7 +14,8 @@ use DecodeLabs\Commandment\Request\Parameter\Flag as FlagParameter;
 use DecodeLabs\Commandment\Request\Parameter\Value as ValueParameter;
 use DecodeLabs\Commandment\Request\Parameter\ValueList as ValueListParameter;
 use DecodeLabs\Exceptional;
-use DecodeLabs\Glitch\Dumpable;
+use DecodeLabs\Nuance\Dumpable;
+use DecodeLabs\Nuance\Entity\NativeObject as NuanceEntity;
 
 class ParameterSet implements Dumpable
 {
@@ -197,9 +198,10 @@ class ParameterSet implements Dumpable
     }
 
 
-
-    public function glitchDump(): iterable
+    public function toNuanceEntity(): NuanceEntity
     {
-        yield 'values' => $this->parameters;
+        $entity = new NuanceEntity($this);
+        $entity->values = $this->parameters;
+        return $entity;
     }
 }

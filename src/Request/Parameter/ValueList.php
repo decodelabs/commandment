@@ -11,7 +11,8 @@ namespace DecodeLabs\Commandment\Request\Parameter;
 
 use DecodeLabs\Commandment\Argument;
 use DecodeLabs\Commandment\Request\Parameter;
-use DecodeLabs\Glitch\Dumpable;
+use DecodeLabs\Nuance\Dumpable;
+use DecodeLabs\Nuance\Entity\NativeObject as NuanceEntity;
 
 /**
  * @implements Parameter<list<string>>
@@ -49,10 +50,11 @@ class ValueList implements
         $this->value[] = $value;
     }
 
-    public function glitchDump(): iterable
+    public function toNuanceEntity(): NuanceEntity
     {
-        yield 'properties' => [
-            'value' => $this->value
-        ];
+        $entity = new NuanceEntity($this);
+        $entity->itemName = $this->name;
+        $entity->setProperty('value', $this->value, readOnly: true);
+        return $entity;
     }
 }
