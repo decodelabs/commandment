@@ -21,15 +21,15 @@ class ValueList implements
     Parameter,
     Dumpable
 {
-    protected(set) string $name;
+    public protected(set) string $name;
     public int $instances { get => 1; }
 
     /**
      * @var list<string>
      */
-    protected(set) array $value;
+    public protected(set) array $value;
 
-    protected(set) ?Argument $argument;
+    public protected(set) ?Argument $argument;
 
     /**
      * @param list<string> $value

@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace DecodeLabs\Commandment\Action;
 
-use DecodeLabs\Archetype;
 use DecodeLabs\Commandment\Action;
 use DecodeLabs\Commandment\Argument;
 use DecodeLabs\Commandment\Argument\Option as OptionArgument;
@@ -20,7 +19,6 @@ use DecodeLabs\Commandment\Description;
 use DecodeLabs\Commandment\Dispatcher;
 use DecodeLabs\Commandment\Request;
 use DecodeLabs\Terminus\Session;
-use ReflectionAttribute;
 use ReflectionClass;
 
 #[Argument\Value(
@@ -42,7 +40,7 @@ class Help implements Action
     ): bool {
         $action = $request->parameters->asString('action');
 
-        if(!$class = $this->dispatcher->getActionClass($action)) {
+        if (!$class = $this->dispatcher->getActionClass($action)) {
             $this->io->newLine();
             $this->io->writeError('Command not found: ');
             $this->io->error($action);
@@ -53,14 +51,14 @@ class Help implements Action
 
         $arguments = [];
 
-        foreach($this->dispatcher->getActionAttributes($class) as $attribute) {
+        foreach ($this->dispatcher->getActionAttributes($class) as $attribute) {
             $arguments[] = $attribute->newInstance();
         }
 
         $ref = new ReflectionClass($class);
         $description = null;
 
-        foreach($ref->getAttributes(
+        foreach ($ref->getAttributes(
             Description::class,
         ) as $attribute) {
             $description = $attribute->newInstance();
@@ -71,22 +69,22 @@ class Help implements Action
         $this->io->{'.>brightMagenta'}($action);
         $this->io->newLine();
 
-        if($description !== null) {
+        if ($description !== null) {
             $this->io->newLine();
             $this->io->writeLine('Description:');
             $this->io->{'.>brightCyan'}($description->description);
             $this->io->newLine();
 
-            if($description->usage !== null) {
+            if ($description->usage !== null) {
                 $this->io->writeLine('Usage:');
                 $this->io->{'.>brightBlue'}($description->usage);
                 $this->io->newLine();
             }
 
-            if(!empty($description->examples)) {
+            if (!empty($description->examples)) {
                 $this->io->writeLine('Examples:');
 
-                foreach($description->examples as $example) {
+                foreach ($description->examples as $example) {
                     $this->io->{'.>brightBlue'}($example);
                 }
 
@@ -94,26 +92,26 @@ class Help implements Action
             }
         }
 
-        if(!empty($arguments)) {
+        if (!empty($arguments)) {
             $this->io->writeLine('Arguments:');
             $argStrings = [];
             $maxLength = 0;
 
-            foreach($arguments as $argument) {
+            foreach ($arguments as $argument) {
                 $key = $argument->name;
 
-                if($argument instanceof ValueListArgument) {
+                if ($argument instanceof ValueListArgument) {
                     $key = $argument->name . ' ..';
-                } else if(!$argument instanceof ValueArgument) {
+                } elseif (!$argument instanceof ValueArgument) {
                     $key = '--' . $argument->name;
 
-                    if($argument instanceof OptionArgument) {
-                        $key = '--' . $argument->name . '=<'.$argument->name.'>';
-                    } else if($argument instanceof OptionListArgument) {
+                    if ($argument instanceof OptionArgument) {
+                        $key = '--' . $argument->name . '=<' . $argument->name . '>';
+                    } elseif ($argument instanceof OptionListArgument) {
                         $key = '--' . $argument->name . ' ..';
                     }
 
-                    if(($argument->shortcut ?? null) !== null) {
+                    if (($argument->shortcut ?? null) !== null) {
                         $key = '-' . $argument->shortcut . ', ' . $key;
                     } else {
                         $key = '    ' . $key;
@@ -123,14 +121,14 @@ class Help implements Action
                 $argStrings[$key] = $argument->description;
                 $len = strlen($key);
 
-                if($len > $maxLength) {
+                if ($len > $maxLength) {
                     $maxLength = $len;
                 }
             }
 
-            foreach($argStrings as $key => $description) {
+            foreach ($argStrings as $key => $description) {
                 $key = str_pad($key, $maxLength, ' ', STR_PAD_RIGHT);
-                $this->io->{'>brightGreen'}($key.' ');
+                $this->io->{'>brightGreen'}($key . ' ');
                 $this->io->{'.>brightCyan'}($description);
             }
         }

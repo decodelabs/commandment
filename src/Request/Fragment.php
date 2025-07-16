@@ -15,9 +15,9 @@ class Fragment implements Stringable
 {
     public ?string $name {
         get {
-            if($this->isOption()) {
+            if ($this->isOption()) {
                 $output = explode('=', $this->body, 2)[0];
-            } elseif($this->isLongFlag()) {
+            } elseif ($this->isLongFlag()) {
                 $output = $this->body;
             } else {
                 return null;
@@ -32,7 +32,7 @@ class Fragment implements Stringable
      */
     public ?array $shortcuts {
         get {
-            if(!$this->isShortFlag()) {
+            if (!$this->isShortFlag()) {
                 return null;
             }
 
@@ -42,16 +42,16 @@ class Fragment implements Stringable
 
     public ?string $value {
         get {
-            if($this->isValue()) {
+            if ($this->isValue()) {
                 return $this->body;
             }
 
-            if($this->isOption()) {
-                if(null === ($output = explode('=', $this->body, 2)[1] ?? null)) {
+            if ($this->isOption()) {
+                if (null === ($output = explode('=', $this->body, 2)[1] ?? null)) {
                     return null;
                 }
 
-                if(
+                if (
                     (
                         str_starts_with($output, '"') &&
                         str_ends_with($output, '"')
@@ -74,7 +74,7 @@ class Fragment implements Stringable
     public function __construct(
         protected(set) string $body
     ) {
-        if(
+        if (
             (
                 str_starts_with($this->body, '"') &&
                 str_ends_with($this->body, '"')

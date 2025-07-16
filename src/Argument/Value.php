@@ -23,7 +23,7 @@ class Value implements Argument
     use ArgumentTrait;
     use ValueTrait;
 
-    protected(set) ?string $default = null;
+    public protected(set) ?string $default = null;
 
     /**
      * @param ?list<string> $options

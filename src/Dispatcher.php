@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace DecodeLabs\Commandment;
 
 use DecodeLabs\Archetype;
-use DecodeLabs\Commandment\Request\Fragment;
 use DecodeLabs\Commandment\Middleware\Help as HelpMiddleware;
+use DecodeLabs\Commandment\Request\Fragment;
 use DecodeLabs\Exceptional;
 use DecodeLabs\Slingshot;
 use DecodeLabs\Terminus\Session;
@@ -23,14 +23,14 @@ class Dispatcher
     /**
      * @var list<Middleware>
      */
-    protected(set) array $middleware = [];
+    public protected(set) array $middleware = [];
 
-    protected(set) Slingshot $slingshot;
+    public protected(set) Slingshot $slingshot;
 
     /**
      * @var array<string,mixed>|null
      */
-    protected(set) ?array $server = null;
+    public protected(set) ?array $server = null;
 
     /**
      * @param array<string,mixed>|null $server
@@ -81,7 +81,7 @@ class Dispatcher
     public function dispatch(
         Request $request
     ): bool {
-        if(
+        if (
             !$request->slingshot->hasType(Session::class) &&
             class_exists(Session::class)
         ) {
@@ -90,25 +90,25 @@ class Dispatcher
             );
         }
 
-        uasort($this->middleware, function(
+        uasort($this->middleware, function (
             Middleware $a,
             Middleware $b
         ) {
             return $a->priority <=> $b->priority;
         });
 
-        foreach($this->middleware as $middleware) {
+        foreach ($this->middleware as $middleware) {
             $request = $middleware->handle($request);
         }
 
-        if(!$class = $this->getActionClass($request->command)) {
+        if (!$class = $this->getActionClass($request->command)) {
             throw Exceptional::NotFound(
                 'Command not found: ' . $request->command,
                 data: $request
             );
         }
 
-        foreach($this->getActionAttributes($class) as $attribute) {
+        foreach ($this->getActionAttributes($class) as $attribute) {
             $argument = $attribute->newInstance();
             $request = $request->withArgument($argument);
         }
@@ -135,14 +135,14 @@ class Dispatcher
         $ref = new ReflectionClass($class);
         $attributes = [];
 
-        if(null !== ($constructor = $ref->getConstructor())) {
+        if (null !== ($constructor = $ref->getConstructor())) {
             $attributes = $constructor->getAttributes(
                 Argument::class,
                 ReflectionAttribute::IS_INSTANCEOF
             );
         }
 
-        foreach($ref->getAttributes(
+        foreach ($ref->getAttributes(
             Argument::class,
             ReflectionAttribute::IS_INSTANCEOF
         ) as $attribute) {

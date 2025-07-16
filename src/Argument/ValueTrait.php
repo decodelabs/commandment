@@ -14,7 +14,7 @@ trait ValueTrait
     /**
      * @var ?list<string>
      */
-    protected(set) ?array $options = null;
+    public protected(set) ?array $options = null;
 
 
     public function isValid(

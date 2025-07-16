@@ -19,8 +19,8 @@ use DecodeLabs\Commandment\Argument;
 )]
 class Flag implements Argument
 {
-    protected(set) string $name;
-    protected(set) ?string $shortcut = null;
+    public protected(set) string $name;
+    public protected(set) ?string $shortcut = null;
 
     public bool $required { get => false; }
     public bool $default { get => false; }

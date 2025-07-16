@@ -26,7 +26,7 @@ class ValueList implements Argument
     /**
      * @var ?list<string>
      */
-    protected(set) ?array $default = null;
+    public protected(set) ?array $default = null;
 
     public ?int $min = null;
     public ?int $max = null;

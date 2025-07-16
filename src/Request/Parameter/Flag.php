@@ -21,10 +21,10 @@ class Flag implements
     Parameter,
     Dumpable
 {
-    protected(set) string $name;
-    protected(set) int $instances = 1;
+    public protected(set) string $name;
+    public protected(set) int $instances = 1;
     public bool $value { get => true; }
-    protected(set) ?Argument $argument;
+    public protected(set) ?Argument $argument;
 
     public function __construct(
         string $name,
@@ -34,7 +34,8 @@ class Flag implements
         $this->argument = $argument;
     }
 
-    public function incrementInstances(): void {
+    public function incrementInstances(): void
+    {
         $this->instances++;
     }
 

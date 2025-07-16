@@ -22,7 +22,7 @@ class ParameterSet implements Dumpable
     /**
      * @var array<string,Parameter<string|list<string>>>
      */
-    protected(set) array $parameters = [];
+    public protected(set) array $parameters = [];
 
     /**
      * @param array<string,Parameter<string|list<string>>> $parameters
@@ -51,21 +51,21 @@ class ParameterSet implements Dumpable
     public function tryBool(
         string $name
     ): ?bool {
-        if(null === ($parameter = ($this->parameters[$name] ?? null))) {
+        if (null === ($parameter = ($this->parameters[$name] ?? null))) {
             return null;
         }
 
-        if($parameter instanceof FlagParameter) {
+        if ($parameter instanceof FlagParameter) {
             return true;
         }
 
-        if($parameter instanceof ValueParameter) {
+        if ($parameter instanceof ValueParameter) {
             return Coercion::parseBool($parameter->value);
         }
 
-        if($parameter instanceof ValueListParameter) {
-            foreach($parameter->value as $value) {
-                if(Coercion::parseBool($value)) {
+        if ($parameter instanceof ValueListParameter) {
+            foreach ($parameter->value as $value) {
+                if (Coercion::parseBool($value)) {
                     return true;
                 }
             }
@@ -85,15 +85,15 @@ class ParameterSet implements Dumpable
     public function tryString(
         string $name
     ): ?string {
-        if(!$parameter = ($this->parameters[$name] ?? null)) {
+        if (!$parameter = ($this->parameters[$name] ?? null)) {
             return null;
         }
 
-        if($parameter instanceof ValueParameter) {
+        if ($parameter instanceof ValueParameter) {
             return $parameter->value;
         }
 
-        if($parameter instanceof ValueListParameter) {
+        if ($parameter instanceof ValueListParameter) {
             return $parameter->value[0] ?? null;
         }
 
@@ -103,7 +103,7 @@ class ParameterSet implements Dumpable
     public function asString(
         string $name
     ): string {
-        if(null === ($output = $this->tryString($name))) {
+        if (null === ($output = $this->tryString($name))) {
             throw Exceptional::InvalidArgument(
                 'Parameter "' . $name . '" does not exist or does not have a value'
             );
@@ -117,7 +117,7 @@ class ParameterSet implements Dumpable
     public function tryInt(
         string $name
     ): ?int {
-        if(null !== ($output = $this->tryString($name))) {
+        if (null !== ($output = $this->tryString($name))) {
             $output = Coercion::asInt($output);
         }
 
@@ -138,15 +138,15 @@ class ParameterSet implements Dumpable
     public function tryStringList(
         string $name
     ): ?array {
-        if(!$parameter = ($this->parameters[$name] ?? null)) {
+        if (!$parameter = ($this->parameters[$name] ?? null)) {
             return null;
         }
 
-        if($parameter instanceof ValueListParameter) {
+        if ($parameter instanceof ValueListParameter) {
             return $parameter->value;
         }
 
-        if($parameter instanceof ValueParameter) {
+        if ($parameter instanceof ValueParameter) {
             return [$parameter->value];
         }
 
@@ -159,7 +159,7 @@ class ParameterSet implements Dumpable
     public function asStringList(
         string $name
     ): array {
-        if(null === ($output = $this->tryStringList($name))) {
+        if (null === ($output = $this->tryStringList($name))) {
             $output = [];
         }
 
@@ -174,9 +174,9 @@ class ParameterSet implements Dumpable
     public function tryIntList(
         string $name
     ): ?array {
-        if(null !== ($output = $this->tryStringList($name))) {
+        if (null !== ($output = $this->tryStringList($name))) {
             $output = array_map(
-                static fn($value) => Coercion::asInt($value),
+                static fn ($value) => Coercion::asInt($value),
                 $output
             );
         }
@@ -190,7 +190,7 @@ class ParameterSet implements Dumpable
     public function asIntList(
         string $name
     ): array {
-        if(null === ($output = $this->tryIntList($name))) {
+        if (null === ($output = $this->tryIntList($name))) {
             $output = [];
         }
 

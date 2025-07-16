@@ -11,7 +11,7 @@ namespace DecodeLabs\Commandment;
 
 trait ArgumentTrait
 {
-    protected(set) string $name;
+    public protected(set) string $name;
     public bool $required = false;
     public ?string $description = null;
 }

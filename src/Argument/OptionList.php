@@ -23,7 +23,7 @@ class OptionList implements Argument
     use ArgumentTrait;
     use ValueTrait;
 
-    protected(set) ?string $shortcut = null;
+    public protected(set) ?string $shortcut = null;
 
     public ?int $min = null;
     public ?int $max = null;
@@ -31,7 +31,7 @@ class OptionList implements Argument
     /**
      * @var ?list<string>
      */
-    protected(set) ?array $default = null;
+    public protected(set) ?array $default = null;
 
     /**
      * @param ?list<string> $default

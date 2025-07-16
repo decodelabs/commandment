@@ -21,10 +21,10 @@ class Value implements
     Parameter,
     Dumpable
 {
-    protected(set) string $name;
+    public protected(set) string $name;
     public int $instances { get => 1; }
-    protected(set) string $value;
-    protected(set) ?Argument $argument;
+    public protected(set) string $value;
+    public protected(set) ?Argument $argument;
 
     public function __construct(
         string $name,

@@ -23,8 +23,8 @@ class Option implements Argument
     use ArgumentTrait;
     use ValueTrait;
 
-    protected(set) ?string $shortcut = null;
-    protected(set) ?string $default = null;
+    public protected(set) ?string $shortcut = null;
+    public protected(set) ?string $default = null;
 
     /**
      * @param ?list<string> $options

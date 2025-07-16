@@ -10,10 +10,9 @@ declare(strict_types=1);
 namespace DecodeLabs\Commandment;
 
 use DecodeLabs\Coercion;
-use DecodeLabs\Commandment\Argument;
+use DecodeLabs\Commandment\Argument\Flag as FlagArgument;
 use DecodeLabs\Commandment\Argument\Option as OptionArgument;
 use DecodeLabs\Commandment\Argument\OptionList as OptionListArgument;
-use DecodeLabs\Commandment\Argument\Flag as FlagArgument;
 use DecodeLabs\Commandment\Argument\Value as ValueArgument;
 use DecodeLabs\Commandment\Argument\ValueList as ValueListArgument;
 use DecodeLabs\Commandment\Request\Fragment;
@@ -32,29 +31,29 @@ class Request
         }
     }
 
-    protected(set) string $command;
+    public protected(set) string $command;
 
     /**
      * @var array<int,Fragment>
      */
-    protected(set) array $fragments = [];
+    public protected(set) array $fragments = [];
 
     /**
      * @var array<string,Argument>
      */
-    protected(set) array $arguments = [];
+    public protected(set) array $arguments = [];
 
     /**
      * @var array<string,mixed>
      */
-    protected(set) array $attributes = [];
+    public protected(set) array $attributes = [];
 
     /**
      * @var array<string,mixed>
      */
-    protected(set) array $server = [];
+    public protected(set) array $server = [];
 
-    protected(set) Slingshot $slingshot;
+    public protected(set) Slingshot $slingshot;
 
     /**
      * @param list<string|Fragment> $fragments
@@ -290,14 +289,14 @@ class Request
         $arguments = $this->arguments;
         $parameters = [];
 
-        while(!empty($fragments)) {
+        while (!empty($fragments)) {
             $fragment = array_shift($fragments);
             $value = (string)$fragment->value;
 
             // Value
-            if($fragment->isValue()) {
-                foreach($arguments as $name => $argument) {
-                    if(
+            if ($fragment->isValue()) {
+                foreach ($arguments as $name => $argument) {
+                    if (
                         $argument instanceof ValueArgument &&
                         $argument->isValid($value)
                     ) {
@@ -311,13 +310,13 @@ class Request
                         continue 2;
                     }
 
-                    if(
+                    if (
                         $argument instanceof ValueListArgument &&
                         $argument->isValid($value)
                     ) {
                         $values = [$value];
 
-                        while(
+                        while (
                             !empty($fragments) &&
                             $fragments[0]->isValue() &&
                             $argument->isValid((string)$fragments[0]->value)
@@ -337,7 +336,7 @@ class Request
                     }
                 }
 
-                if(!isset($parameters['unnamed'])) {
+                if (!isset($parameters['unnamed'])) {
                     $parameters['unnamed'] = new ValueListParameter(
                         name: 'unnamed',
                         value: [],
@@ -345,7 +344,7 @@ class Request
                     );
                 }
 
-                if($parameters['unnamed'] instanceof ValueListParameter) {
+                if ($parameters['unnamed'] instanceof ValueListParameter) {
                     $parameters['unnamed']->addValue($value);
                 }
 
@@ -355,11 +354,11 @@ class Request
 
 
             // Option
-            if($fragment->isOption()) {
+            if ($fragment->isOption()) {
                 $name = (string)$fragment->name;
                 $argument = $arguments[$name] ?? null;
 
-                if(
+                if (
                     $argument instanceof OptionArgument &&
                     $argument->isValid($value)
                 ) {
@@ -373,7 +372,7 @@ class Request
                     continue;
                 }
 
-                if(!isset($parameters[$name])) {
+                if (!isset($parameters[$name])) {
                     $parameters[$name] = new ValueParameter(
                         name: $name,
                         value: $value,
@@ -385,8 +384,8 @@ class Request
 
                 $parameter = $parameters[$name];
 
-                if($parameter instanceof ValueParameter) {
-                    if($parameter->argument) {
+                if ($parameter instanceof ValueParameter) {
+                    if ($parameter->argument) {
                         $parameter->replaceValue($value);
                     } else {
                         $parameter = new ValueListParameter(
@@ -395,9 +394,9 @@ class Request
                             argument: null
                         );
                     }
-                } elseif($parameter instanceof ValueListParameter) {
+                } elseif ($parameter instanceof ValueListParameter) {
                     $parameter->addValue($value);
-                } elseif($parameter instanceof FlagParameter) {
+                } elseif ($parameter instanceof FlagParameter) {
                     $parameter->incrementInstances();
                 }
 
@@ -406,10 +405,10 @@ class Request
 
 
             // Shortcut
-            if($fragment->isShortFlag()) {
-                foreach($fragment->shortcuts ?? [] as $shortcut) {
-                    foreach($arguments as $name => $argument) {
-                        if(
+            if ($fragment->isShortFlag()) {
+                foreach ($fragment->shortcuts ?? [] as $shortcut) {
+                    foreach ($arguments as $name => $argument) {
+                        if (
                             $argument instanceof FlagArgument &&
                             $argument->shortcut === $shortcut
                         ) {
@@ -432,12 +431,12 @@ class Request
             }
 
 
-            if($fragment->isLongFlag()) {
+            if ($fragment->isLongFlag()) {
                 $name = (string)$fragment->name;
                 $argument = $arguments[$name] ?? null;
 
-                if($argument instanceof FlagArgument) {
-                    if(
+                if ($argument instanceof FlagArgument) {
+                    if (
                         isset($parameters[$name]) &&
                         $parameters[$name] instanceof FlagParameter
                     ) {
@@ -453,10 +452,10 @@ class Request
                     continue;
                 }
 
-                if($argument instanceof OptionListArgument) {
+                if ($argument instanceof OptionListArgument) {
                     $values = [];
 
-                    while(
+                    while (
                         !empty($fragments) &&
                         $fragments[0]->isValue() &&
                         $argument->isValid((string)$fragments[0]->value)
@@ -475,7 +474,7 @@ class Request
                     continue;
                 }
 
-                if(!isset($parameters[$name])) {
+                if (!isset($parameters[$name])) {
                     $parameters[$name] = new FlagParameter(
                         name: $name,
                         argument: null
@@ -484,7 +483,7 @@ class Request
                     continue;
                 }
 
-                if($parameters[$name] instanceof FlagParameter) {
+                if ($parameters[$name] instanceof FlagParameter) {
                     $parameters[$name]->incrementInstances();
                     continue;
                 }
@@ -492,13 +491,13 @@ class Request
         }
 
 
-        foreach($arguments as $name => $argument) {
-            if(isset($parameters[$name])) {
+        foreach ($arguments as $name => $argument) {
+            if (isset($parameters[$name])) {
                 continue;
             }
 
-            if($argument->default !== null) {
-                if(
+            if ($argument->default !== null) {
+                if (
                     $argument instanceof ValueArgument ||
                     $argument instanceof OptionArgument
                 ) {
@@ -507,7 +506,7 @@ class Request
                         value: Coercion::toString($argument->default),
                         argument: $argument
                     );
-                } elseif(
+                } elseif (
                     $argument instanceof ValueListArgument ||
                     $argument instanceof OptionListArgument
                 ) {
@@ -522,7 +521,7 @@ class Request
                 continue;
             }
 
-            if($argument->required) {
+            if ($argument->required) {
                 throw Exceptional::InvalidArgument(
                     'Missing required argument "' . $name . '"'
                 );
@@ -530,16 +529,16 @@ class Request
         }
 
 
-        foreach($parameters as $name => $parameter) {
-            if($parameter instanceof ValueListParameter) {
+        foreach ($parameters as $name => $parameter) {
+            if ($parameter instanceof ValueListParameter) {
                 // @phpstan-ignore-next-line
                 $min = $parameter->argument?->min ?? 0;
 
-                if($parameter->argument?->required) {
+                if ($parameter->argument?->required) {
                     $min = max($min, 1);
                 }
 
-                if(count($parameter->value) < $min) {
+                if (count($parameter->value) < $min) {
                     throw Exceptional::InvalidArgument(
                         'Parameter "' . $name . '" requires at least ' .
                         // @phpstan-ignore-next-line
@@ -547,7 +546,7 @@ class Request
                     );
                 }
 
-                if(
+                if (
                     // @phpstan-ignore-next-line
                     ($parameter->argument?->max ?? null) !== null &&
                     count($parameter->value) > ($parameter->argument?->max)

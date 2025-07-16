@@ -29,11 +29,11 @@ class Help implements Middleware
     public function handle(
         Request $request
     ): Request {
-        if(!class_exists(Session::class)) {
+        if (!class_exists(Session::class)) {
             return $request;
         }
 
-        foreach($request->fragments as $fragment) {
+        foreach ($request->fragments as $fragment) {
             if ($fragment->body === '--help') {
                 return $this->rewriteRequest(
                     $request,
