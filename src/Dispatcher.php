@@ -36,6 +36,7 @@ class Dispatcher
      * @param array<string,mixed>|null $server
      */
     public function __construct(
+        protected Archetype $archetype,
         ?array $server = null
     ) {
         $this->slingshot = new Slingshot();
@@ -168,6 +169,6 @@ class Dispatcher
         $name = ucwords($name);
         $name = str_replace(' ', '', $name);
 
-        return Archetype::tryResolve(Action::class, $name);
+        return $this->archetype->tryResolve(Action::class, $name);
     }
 }

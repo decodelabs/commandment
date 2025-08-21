@@ -89,9 +89,13 @@ effigy my-action "this is my input" -v --potatoes=3
 To run your Action, create a `Dispatcher` and a `Request` object, then call the `dispatch()` method:
 
 ```php
+use DecodeLabs\Archetype;
 use DecodeLabs\Commandment\Dispatcher;
+use DecodeLabs\Monarch;
 
-$dispatcher = new Dispatcher();
+$dispatcher = new Dispatcher(
+    Monarch::getService(Archetype::class)
+);
 
 $request = $dispatcher->newRequest(
     command: 'my-action',
@@ -114,11 +118,8 @@ $dispatcher->dispatch($request);
 If you want to provide extra objects for dependency injection, you can add them to the `Slingshot` instance, either on the `Dispatcher` or on the `Request` object:
 
 ```php
-use DecodeLabs\Commandment\Dispatcher;
 use MyThing\PotatoPeeler;
 use MyThing\PotatoMasher;
-
-$dispatcher = new Dispatcher();
 
 $dispatcher->slingshot->addType(new PotatoPeeler());
 
@@ -190,10 +191,8 @@ class MyMiddleware implements Middleware
 Add the middleware to the dispatcher before dispatching:
 
 ```php
-use DecodeLabs\Commandment\Dispatcher;
 use MyThing\Middleware\MyMiddleware;
 
-$dispatcher = new Dispatcher();
 $dispatcher->addMiddleware(new MyMiddleware());
 $request = $dispatcher->newRequest('my-action', ['input ...']);
 $dispatcher->dispatch($request);
