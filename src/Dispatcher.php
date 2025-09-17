@@ -91,7 +91,7 @@ class Dispatcher
             );
         }
 
-        uasort($this->middleware, function (
+        usort($this->middleware, function (
             Middleware $a,
             Middleware $b
         ) {
