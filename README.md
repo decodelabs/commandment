@@ -15,6 +15,8 @@ Commandment provides a unified system for building and dispatching console actio
 
 ## Installation
 
+This package requires PHP 8.4 or higher.
+
 Install via Composer:
 
 ```bash
