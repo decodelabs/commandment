@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @package Commandment
- * @license http://opensource.org/licenses/MIT
+ * Commandment
+ * @license https://opensource.org/licenses/MIT
  */
 
 declare(strict_types=1);
