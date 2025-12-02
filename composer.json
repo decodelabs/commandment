@@ -2,7 +2,7 @@
     "name": "decodelabs/commandment",
     "description": "Console command interface",
     "type": "library",
-    "keywords": [],
+    "keywords": [ ],
     "license": "MIT",
     "authors": [
         {
@@ -20,7 +20,7 @@
         "decodelabs/slingshot": "^0.3"
     },
     "require-dev": {
-        "decodelabs/chorus": "^0.1",
+        "decodelabs/chorus": ">0",
         "decodelabs/phpstan-decodelabs": "^0.7.0",
         "decodelabs/terminus": "^0.14"
     },
