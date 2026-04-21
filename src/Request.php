@@ -549,10 +549,12 @@ class Request
                 if (
                     // @phpstan-ignore-next-line
                     ($parameter->argument?->max ?? null) !== null &&
+                    // @phpstan-ignore-next-line
                     count($parameter->value) > ($parameter->argument?->max)
                 ) {
                     throw Exceptional::InvalidArgument(
                         'Parameter "' . $name . '" requires at most ' .
+                        // @phpstan-ignore-next-line
                         ($parameter->argument?->max) . ' values'
                     );
                 }
