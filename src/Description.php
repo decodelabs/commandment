@@ -18,9 +18,9 @@ class Description
      * @param ?array<string> $examples
      */
     public function __construct(
-        protected(set) string $description,
-        protected(set) ?string $usage = null,
-        protected(set) ?array $examples = null,
+        public protected(set) string $description,
+        public protected(set) ?string $usage = null,
+        public protected(set) ?array $examples = null,
     ) {
     }
 }

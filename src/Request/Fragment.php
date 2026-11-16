@@ -72,7 +72,7 @@ class Fragment implements Stringable
     }
 
     public function __construct(
-        protected(set) string $body
+        public protected(set) string $body
     ) {
         if (
             (
